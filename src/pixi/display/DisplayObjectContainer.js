@@ -226,43 +226,62 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
  */
 PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 {
-	/*
-	 * this funtion needs to be recoded.. 
-	 * can be done a lot faster..
-	 */
-	return;
-	
-	// need to fix this function :/
-	/*
 	// TODO I already know this??
 	var index = this.children.indexOf( child );
 	var index2 = this.children.indexOf( child2 );
 	
 	if ( index !== -1 && index2 !== -1 ) 
 	{
-		// cool
-		
-		/*
-		if(this.stage)
-		{
-			// this is to satisfy the webGL batching..
-			// TODO sure there is a nicer way to achieve this!
-			this.stage.__removeChild(child);
-			this.stage.__removeChild(child2);
-			
-			this.stage.__addChild(child);
-			this.stage.__addChild(child2);
-		}
-		
-		// swap the positions..
 		this.children[index] = child2;
 		this.children[index2] = child;
-		
+
+		var tempPrev = child._iPrev,
+			tempNext = child._iNext;
+
+		if (!child._iNext || !child._iPrev || !child2._iNext || !child2._iPrev) {
+			console.log();
+		}
+
+		child._iPrev = child2._iPrev;
+		child._iNext = child2._iNext;
+		child2._iPrev = tempPrev;
+		child2._iNext = tempNext;
+
+		child._iPrev._iNext = child;
+		if (child._iNext) child._iNext._iPrev = child;
+		child2._iPrev._iNext = child2;
+		if (child2._iNext) child2._iNext._iPrev = child2;
+		/*
+		 */
+
+		// setting the right element as "last"
+		var newLast;
+		if (this.last === child) {
+			newLast = child2;
+		} else if (this.last === child2) {
+			newLast = child;
+		}
+
+		if (newLast) {
+			var updateLast = this;
+			var previousObject  = this.filter ? this.last._iPrev : this.last;
+
+			while(updateLast)
+			{
+				if(updateLast.last == previousObject)
+				{
+					updateLast.last = newLast.last;
+				}
+				updateLast = updateLast.parent;
+			}
+			
+		}
+
 	}
 	else
 	{
 		throw new Error(child + " Both the supplied DisplayObjects must be a child of the caller " + this);
-	}*/
+	}
 }
 
 /**

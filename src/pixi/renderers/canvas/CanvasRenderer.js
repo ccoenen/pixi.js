@@ -144,9 +144,16 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	// one the display object hits this. we can break the loop	
 	var testObject = displayObject.last._iNext;
 	displayObject = displayObject.first;
-	
+
+	var kennenseschon = [];
+
 	do	
 	{
+		if (kennenseschon.indexOf(displayObject) > -1) {
+			console.error('zyklisch!');
+			return;
+		}
+		kennenseschon.push(displayObject);
 		transform = displayObject.worldTransform;
 		
 		if(!displayObject.visible)
